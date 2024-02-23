@@ -13,7 +13,17 @@ spring:
     hikari:
       max-lifetime: 160000
 
-
+  jpa:
+    defer-datasource-initialization: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
 
   eureka:
     instance:

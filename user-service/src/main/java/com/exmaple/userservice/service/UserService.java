@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     UserDto createUser(UserDto userDto);
 
-    UserDto getUSerByUserId(String userId);
+    UserDto getUserByUserId(String userId);
     Iterable<UserEntity> getUserByAll();
 
 }

@@ -51,8 +51,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto getUSerByUserId(String userId) {
-        UserEntity userEntity = userRepository.findAllById(userId);
+    public UserDto getUserByUserId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
 
         if(userEntity == null){
 

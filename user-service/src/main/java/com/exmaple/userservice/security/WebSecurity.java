@@ -6,9 +6,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -32,6 +34,8 @@ public class WebSecurity{
 
 
     private final ObjectPostProcessor<Object> objectPostProcessor;
+
+    private final Environment env;
 
     private static final String[] WHITE_LIST = {
             "/users/**",
@@ -70,10 +74,11 @@ public class WebSecurity{
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception{
 
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, env);
 
         AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder(objectPostProcessor);
         authenticationFilter.setAuthenticationManager(authenticationManager(builder));
+
 
         return authenticationFilter;
 

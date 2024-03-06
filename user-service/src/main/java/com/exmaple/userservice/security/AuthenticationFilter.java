@@ -4,6 +4,9 @@ import com.exmaple.userservice.dto.UserDto;
 import com.exmaple.userservice.service.UserService;
 import com.exmaple.userservice.vo.RequestLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 
 
@@ -57,6 +61,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String userName = ((User)authResult.getPrincipal()).getUsername();
 
         UserDto userDetails = userService.getUserDetailsByEmail(userName);
+
+
+        String token = Jwts.builder()
+                .setSubject(userDetails.getUserId()) // JWT의 주제로 사용자 ID 설정
+                .setExpiration(new Date(System.currentTimeMillis() +
+                        Long.parseLong(env.getProperty("token.expiration_time")))) // 토큰 만료 시간 설정
+                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret")) // 토큰 서명 알고리즘 및 서명키 설정
+                .compact();
+
+
+        response.addHeader("token", token);
+        response.addHeader("userId", userDetails.getUserId());
 
     }
 }

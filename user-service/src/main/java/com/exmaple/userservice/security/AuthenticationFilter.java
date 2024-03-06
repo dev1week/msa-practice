@@ -2,8 +2,12 @@ package com.exmaple.userservice.security;
 
 import com.exmaple.userservice.dto.UserDto;
 import com.exmaple.userservice.service.UserService;
+
 import com.exmaple.userservice.vo.RequestLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,5 +62,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         UserDto userDetails = userService.getUserDetailsByEmail(userName);
 
+
+        String token = Jwts.builder()
+                .setSubject(userDetails.getUserId())
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+                .compact();
+
+        response.addHeader("token", token);
+        response.addHeader("userId", userDetails.getUserId());
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 import java.io.IOException;
 
@@ -40,6 +41,7 @@ public class WebSecurity{
         http.csrf(csrf->csrf.disable());
         http.authorizeHttpRequests(request->{
             //gateway에서 호출시 해당 URL 수정해야합니다. /users로 수정합니다.
+            request.requestMatchers(antMatcher("/users/**")).permitAll();
             request.requestMatchers(antMatcher("/user-service/users/**")).permitAll();
             request.requestMatchers(antMatcher("/h2-console/**")).permitAll();
         });

@@ -40,3 +40,10 @@ token:
   secret: secretkeydsfdafajfajioewjfkljasdklfjisadjfiosadjfkjaioejfkajfioejkfajifojaisjfklejklafjeiajfaljfkdsjfai
 
 
+logging:
+  level:
+    com.example.orderservice: DEBUG
+
+token:
+  expiration_time: 86400000
+  secret: SGVsbG8gV29ybGQhIQadfjadksfjkadsjfkladjsfijeakwjfkejaiowfjakjdfioadjskfjadisfjiasejfkajekfjiawjfk

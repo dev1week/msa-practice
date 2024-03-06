@@ -6,11 +6,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -35,27 +32,10 @@ public class WebSecurity{
 
     private final ObjectPostProcessor<Object> objectPostProcessor;
 
-    private final Environment env;
-
-    private static final String[] WHITE_LIST = {
-            "/users/**",
-            "/",
-            "/**"
-    };
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.authorizeHttpRequests(authorize -> {
-                    try {
-                        authorize
-                                .requestMatchers(WHITE_LIST).permitAll()
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
-                                .requestMatchers(new IpAddressMatcher("127.0.0.1")).permitAll();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-        )
+        http
+                .authorizeHttpRequests((authz)-> authz.anyRequest())
                 .addFilter(getAuthenticationFilter())
                 .csrf(AbstractHttpConfigurer::disable)
                 //h2 관련 환경설정
@@ -74,15 +54,15 @@ public class WebSecurity{
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception{
 
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, env);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter();
 
         AuthenticationManagerBuilder builder = new AuthenticationManagerBuilder(objectPostProcessor);
         authenticationFilter.setAuthenticationManager(authenticationManager(builder));
 
-
         return authenticationFilter;
 
     }
+
 
 
 }

@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 2673
 
 
 spring:
@@ -35,6 +35,12 @@ spring:
       service-url:
         defaultZone: http://127.0.0.1:8761/eureka
 
+token:
+  expiration_time: 86400000
+  secret: secretkeydsfdafajfajioewjfkljasdklfjisadjfiosadjfkjaioejfkajfioejkfajifojaisjfklejklafjeiajfaljfkdsjfai
 
 
+logging:
+  level:
+    com.example.orderservice: DEBUG
 

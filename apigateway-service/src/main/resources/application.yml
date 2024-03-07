@@ -22,21 +22,43 @@ spring:
             preLogger: true
             postLogger: true
       routes:
+#        - id: user-service
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/user-service/**
+        -  id: user-service
+           uri: lb://USER-SERVICE
+           predicates:
+              - Path=/user-service/login
+              - Method=POST
+           filters:
+             - RemoveRequestHeader=Cookie
+             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/user-service/**
+            - Method=GET
           filters:
-            - CustomFilter
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
         - id: catalog-service
           uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/catalog-service/**
-          filters:
-            - CustomFilter
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/order-service/**
-          filters:
-            - CustomFilter
+token:
+  expiration_time: 86400000
+  secret: secretkeydsfdafajfajioewjfkljasdklfjisadjfiosadjfkjaioejfkajfioejkfajifojaisjfklejklafjeiajfaljfkdsjfai

@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -28,6 +29,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class WebSecurity{
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -38,9 +40,11 @@ public class WebSecurity{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("필터탐");
         http.csrf(csrf->csrf.disable());
         http.authorizeHttpRequests(request->{
             //gateway에서 호출시 해당 URL 수정해야합니다. /users로 수정합니다.
+            request.requestMatchers(antMatcher("/**")).permitAll();
             request.requestMatchers(antMatcher("/users/**")).permitAll();
             request.requestMatchers(antMatcher("/user-service/users/**")).permitAll();
             request.requestMatchers(antMatcher("/h2-console/**")).permitAll();

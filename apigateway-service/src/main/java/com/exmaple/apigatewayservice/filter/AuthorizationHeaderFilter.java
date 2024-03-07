@@ -42,10 +42,13 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
             }
 
-            String jwt = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+            String jwt = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0).replace("Bearer", "");
 
 
-            if(!isJwtInvalid(jwt)){
+            log.info(jwt);
+
+            if(!isJwtValid(jwt)){
+                log.error("에러발생");
                 return onError(exchange, "No Authorization haeder", HttpStatus.UNAUTHORIZED );
             }
 
@@ -56,27 +59,27 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
         });
     }
 
-    private boolean isJwtInvalid(String jwt) {
+    private boolean isJwtValid(String jwt) {
         boolean returnValue = true;
-
 
         String subject = null;
 
-        try{
-            subject = Jwts.parser().setSigningKey(env.getProperty("token.secret"))
-                    .parseClaimsJwt(jwt).getBody()
+        try {
+            subject = Jwts
+                    .parser()
+                    .setSigningKey(env.getProperty("token.secret"))
+                    .parseClaimsJws(jwt).getBody()
                     .getSubject();
-        }catch(Exception e){
+        } catch (Exception ex) {
             returnValue = false;
         }
 
-        if(subject==null||subject.isEmpty()){
+        if (subject == null || subject.isEmpty()) {
             returnValue = false;
         }
 
         return returnValue;
     }
-
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
